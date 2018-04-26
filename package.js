@@ -1,7 +1,7 @@
 Package.describe({
     summary:        'Meteor social networks link system',
     version:        '0.0.3',
-    git:            '',
+    git:            'https://github.com/ResumeServices/link-social-network-accounts.git',
     name:           'alparandr:link-social-network-accounts',
     documentation:  'README.md'
 });
@@ -21,8 +21,6 @@ Package.onUse(function (api) {
         'services/linkedin.js'
     ], 'client');
     api.use(['templating', 'random'], 'client');
-    // api.use('base64@1.0.4');
-
 
     // --- facebook
     api.export('Facebook');
