@@ -27,6 +27,28 @@ if (Meteor.isClient) {
         }
         var credentialRequestCompleteCallback   =   Accounts.oauth.credentialRequestCompleteHandler(callback);
             Facebook.requestCredential(options, credentialRequestCompleteCallback);
+    };
+
+    Meteor.getFacebookInfo  =   function(options, callback) {
+        if ( Meteor.userId() ) {
+            throw new Meteor.Error(401, "You're already logged in.");
+        }
+        if (Package['facebook'] || Package['facebook-oauth'] || Package['accounts-facebook']) {
+            throw new Meteor.Error(403, 'Please delete accounts-facebook, facebook-oauth and facebook packages');
+        }
+        if ( !callback && (typeof options === "function") ) {
+            callback    =   options;
+            options     =   null;
+        }
+
+        Facebook.requestCredential(options, function (credentialTokenOrError) {
+            if ( credentialTokenOrError && (credentialTokenOrError instanceof Error) ) {
+                callback(credentialTokenOrError);
+            } else {
+                var credentialSecret    =   OAuth._retrieveCredentialSecret(credentialTokenOrError);
+                Meteor.call("Facebook.__retrieveCredential", credentialTokenOrError, credentialSecret, callback);
+            }
+        });
     }
 }
 

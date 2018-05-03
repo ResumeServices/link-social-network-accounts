@@ -1,19 +1,24 @@
 Accounts.registerLoginHandler(function (options) {
-    check(options, {
-        token:    String,
-        secret:   Match.OneOf(null, String)
-    });
-    var result  =   OAuth.retrieveCredential(options.token, options.secret);
-    if ( !result ) {
-        return {
+    if ( options && (typeof options.token === "string") ) {
+        check(options, {
+            token:      String,
+            secret:     Match.OneOf(null, String)
+        });
+
+        var result  =   OAuth.retrieveCredential(options.token, options.secret);
+        if ( !result ) {
+            return {
                 type:   "link",
                 error:  new Meteor.Error( Accounts.LoginCancelledError.numericError, "No matching link attempt found" )
-        };
-    }
-    if ( result instanceof Error ) {
-        throw result;
+            };
+        }
+        if ( result instanceof Error ) {
+            throw result;
+        } else {
+            return Accounts.LinkUserFromExternalService( result.serviceName, result.serviceData, result.options );
+        }
     } else {
-        return Accounts.LinkUserFromExternalService( result.serviceName, result.serviceData, result.options );
+        return undefined;
     }
 });
 
